@@ -774,6 +774,15 @@ class MainScreen(Screen):
             use_advance_search=CONFIGURATION.get().enable_advanced_full_text_search,
         )
 
+        # derive API fields from configured columns — always include the mandatory base fields
+        _base_fields = {'id', 'key', 'status', 'summary', 'issuetype', 'parent'}
+        _column_fields = {
+            col.jira_field
+            for col in CONFIGURATION.get().search_results_columns
+            if col.jira_field is not None
+        }
+        _search_fields = list(_base_fields | _column_fields)
+
         # search work items by different criteria
         response: APIControllerResponse
         if CONFIGURATION.get().cloud:
@@ -789,6 +798,7 @@ class MainScreen(Screen):
                 next_page_token=next_page_token,
                 limit=CONFIGURATION.get().search_results_per_page,
                 order_by=order_by,
+                fields=_search_fields,
             )
         else:
             response = await self.api.search_issues_by_page_number(
@@ -803,6 +813,7 @@ class MainScreen(Screen):
                 page=page,
                 limit=CONFIGURATION.get().search_results_per_page,
                 order_by=order_by,
+                fields=_search_fields,
             )
 
         if not response.success or response.result is None:

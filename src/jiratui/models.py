@@ -57,6 +57,68 @@ class JiraWorkItemFields(Enum):
     COMPONENTS = 'components'
 
 
+class SearchResultColumn(enum.Enum):
+    """Columns that can be displayed in the search results table."""
+
+    NUMBER = 'number'
+    KEY = 'key'
+    PARENT = 'parent'
+    STATUS = 'status'
+    TYPE = 'type'
+    SUMMARY = 'summary'
+    ASSIGNEE = 'assignee'
+    REPORTER = 'reporter'
+    PRIORITY = 'priority'
+    CREATED = 'created'
+    UPDATED = 'updated'
+    DUE_DATE = 'due_date'
+
+    @property
+    def label(self) -> str:
+        return {
+            SearchResultColumn.NUMBER: '#',
+            SearchResultColumn.KEY: 'Key',
+            SearchResultColumn.PARENT: 'Parent',
+            SearchResultColumn.STATUS: 'Status',
+            SearchResultColumn.TYPE: 'Type',
+            SearchResultColumn.SUMMARY: 'Summary',
+            SearchResultColumn.ASSIGNEE: 'Assignee',
+            SearchResultColumn.REPORTER: 'Reporter',
+            SearchResultColumn.PRIORITY: 'Priority',
+            SearchResultColumn.CREATED: 'Created',
+            SearchResultColumn.UPDATED: 'Updated',
+            SearchResultColumn.DUE_DATE: 'Due Date',
+        }[self]
+
+    @property
+    def jira_field(self) -> str | None:
+        """The Jira API field name for this column, or None if it has no direct Jira field (e.g. row number)."""
+        return {
+            SearchResultColumn.NUMBER: None,
+            SearchResultColumn.KEY: 'key',
+            SearchResultColumn.PARENT: 'parent',
+            SearchResultColumn.STATUS: 'status',
+            SearchResultColumn.TYPE: 'issuetype',
+            SearchResultColumn.SUMMARY: 'summary',
+            SearchResultColumn.ASSIGNEE: 'assignee',
+            SearchResultColumn.REPORTER: 'reporter',
+            SearchResultColumn.PRIORITY: 'priority',
+            SearchResultColumn.CREATED: 'created',
+            SearchResultColumn.UPDATED: 'updated',
+            SearchResultColumn.DUE_DATE: 'duedate',
+        }[self]
+
+
+DEFAULT_SEARCH_RESULT_COLUMNS = [
+    SearchResultColumn.NUMBER,
+    SearchResultColumn.KEY,
+    SearchResultColumn.PARENT,
+    SearchResultColumn.STATUS,
+    SearchResultColumn.TYPE,
+    SearchResultColumn.SUMMARY,
+]
+
+
 class WorkItemsSearchOrderBy(enum.Enum):
     CREATED_ASC = 'created asc'
     CREATED_DESC = 'created desc'

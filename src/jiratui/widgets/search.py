@@ -13,7 +13,7 @@ from textual.widgets._data_table import RowDoesNotExist
 
 from jiratui.api_controller.controller import APIControllerResponse
 from jiratui.config import CONFIGURATION
-from jiratui.models import JiraIssue, JiraIssueSearchResponse
+from jiratui.models import JiraIssue, JiraIssueSearchResponse, SearchResultColumn
 from jiratui.utils.styling import get_style_for_work_item_status, get_style_for_work_item_type
 from jiratui.utils.urls import build_external_url_for_issue
 
@@ -246,8 +246,13 @@ class IssuesSearchResultsTable(DataTable):
             # there is a token to fetch the next page
             self.token_by_page[self.page + 1] = response.next_page_token
 
-        # set the columns
-        self.add_columns(*['#', 'Key', 'Parent', 'Status', 'Type', 'Summary'])
+        # set the columns — row number is always first, then config-driven columns
+        # (excluding NUMBER if the user accidentally added it to config)
+        columns = [
+            col for col in CONFIGURATION.get().search_results_columns
+            if col != SearchResultColumn.NUMBER
+        ]
+        self.add_columns(*['#', *[col.label for col in columns]])
         # build the rows
         for index, issue in enumerate(response.issues):
             issue_summary = issue.cleaned_summary(
@@ -263,17 +268,32 @@ class IssuesSearchResultsTable(DataTable):
             if CONFIGURATION.get().search_results_style_work_item_type:
                 style_work_type = get_style_for_work_item_type(issue.issue_type.name.lower())
 
-            self.add_row(
-                *[
-                    index + 1,
-                    issue.key,
-                    issue.parent_key,
-                    Text(issue.status.name, style=style_status),
-                    Text(issue.work_item_type_name, style=style_work_type),
-                    Text(issue_summary),
-                ],
-                key=f'{issue.id}#{issue.key}',
-            )
+            row: list = [index + 1]
+            for col in columns:
+                if col == SearchResultColumn.KEY:
+                    row.append(issue.key)
+                elif col == SearchResultColumn.PARENT:
+                    row.append(issue.parent_key)
+                elif col == SearchResultColumn.STATUS:
+                    row.append(Text(issue.status.name, style=style_status))
+                elif col == SearchResultColumn.TYPE:
+                    row.append(Text(issue.work_item_type_name, style=style_work_type))
+                elif col == SearchResultColumn.SUMMARY:
+                    row.append(Text(issue_summary))
+                elif col == SearchResultColumn.ASSIGNEE:
+                    row.append(Text(issue.assignee_display_name))
+                elif col == SearchResultColumn.REPORTER:
+                    row.append(Text(issue.reporter_display_name))
+                elif col == SearchResultColumn.PRIORITY:
+                    row.append(Text(issue.priority_name))
+                elif col == SearchResultColumn.CREATED:
+                    row.append(Text(issue.created_on))
+                elif col == SearchResultColumn.UPDATED:
+                    row.append(Text(issue.updated.strftime('%Y-%m-%d %H:%M') if issue.updated else ''))
+                elif col == SearchResultColumn.DUE_DATE:
+                    row.append(Text(issue.display_due_date))
+
+            self.add_row(*row, key=f'{issue.id}#{issue.key}')
 
     def on_data_table_row_selected(self, event: DataTable.RowSelected) -> None:
         """Fetches the details of the currently-selected item."""

@@ -16,7 +16,7 @@ from jiratui.constants import (
     ISSUE_SEARCH_DEFAULT_MAX_RESULTS,
 )
 from jiratui.files import get_config_file
-from jiratui.models import BaseModel, WorkItemsSearchOrderBy
+from jiratui.models import BaseModel, DEFAULT_SEARCH_RESULT_COLUMNS, SearchResultColumn, WorkItemsSearchOrderBy
 
 
 class SSLConfiguration(BaseModel):
@@ -188,9 +188,22 @@ class ApplicationConfiguration(BaseSettings):
     search items by summary and description fields."""
     ssl: SSLConfiguration | None = Field(default_factory=SSLConfiguration)
     """SSL configuration for client-side certificates and CA bundle."""
-    search_results_default_order: WorkItemsSearchOrderBy = WorkItemsSearchOrderBy.CREATED_DESC
+    search_results_default_order: WorkItemsSearchOrderBy = WorkItemsSearchOrderBy.UPDATED_DESC
     """The default order for search results. Accepts values from WorkItemsSearchOrderBy enum: UPDATED_ASC, UPDATED_DESC, CREATED_ASC,
     CREATED_DESC, PRIORITY_ASC, PRIORITY_DESC, KEY_ASC, KEY_DESC."""
+    search_results_columns: list[SearchResultColumn] = Field(
+        default_factory=lambda: list(DEFAULT_SEARCH_RESULT_COLUMNS)
+    )
+    """The columns to display in the search results table. Accepts a list of values from SearchResultColumn enum:
+    number, key, parent, status, type, summary, assignee, reporter, priority, created, updated, due_date.
+    Example:
+    search_results_columns:
+      - key
+      - status
+      - summary
+      - assignee
+      - updated
+    """
     git_repositories: dict | None = None
     """The Git repositories to create new branches based on work items. It expects a mapping from user-defined IDs into
     a dictionary with the name of the repository and the path to the directory that contains the .git directory.
