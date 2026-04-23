@@ -1,3 +1,4 @@
+import textwrap
 from typing import cast
 
 from rich.text import Text
@@ -221,6 +222,23 @@ class IssuesSearchResultsTable(DataTable):
     def get_initial_results_set(self) -> JiraIssueSearchResponse | None:
         return self._initial_results_set
 
+    @property
+    def summary_max_lines(self) -> int:
+        return max(1, CONFIGURATION.get().search_results_summary_max_lines)
+
+    def _build_summary_cell(self, issue: JiraIssue, default_width: int) -> Text:
+        summary_width = (
+            CONFIGURATION.get().search_results_truncate_work_item_summary or default_width
+        )
+        summary_width = max(10, summary_width)
+        wrapped = textwrap.wrap(
+            issue.cleaned_summary(),
+            width=summary_width,
+            max_lines=self.summary_max_lines,
+            placeholder='...',
+        )
+        return Text('\n'.join(wrapped))
+
     def watch_search_results(self, response: JiraIssueSearchResponse | None = None) -> None:
         """Watches the content of a reactive attribute that contains the details of the work item selected by the user.
 
@@ -253,13 +271,11 @@ class IssuesSearchResultsTable(DataTable):
             if col != SearchResultColumn.NUMBER
         ]
         self.add_columns(*['#', *[col.label for col in columns]])
+        has_summary_column = SearchResultColumn.SUMMARY in columns
+        row_height = self.summary_max_lines if has_summary_column else 1
+
         # build the rows
         for index, issue in enumerate(response.issues):
-            issue_summary = issue.cleaned_summary(
-                CONFIGURATION.get().search_results_truncate_work_item_summary
-                or maximum_summary_column_width
-            )
-
             style_status = ''
             if CONFIGURATION.get().search_results_style_work_item_status:
                 style_status = get_style_for_work_item_status(issue.status.name.lower())
@@ -279,7 +295,7 @@ class IssuesSearchResultsTable(DataTable):
                 elif col == SearchResultColumn.TYPE:
                     row.append(Text(issue.work_item_type_name, style=style_work_type))
                 elif col == SearchResultColumn.SUMMARY:
-                    row.append(Text(issue_summary))
+                    row.append(self._build_summary_cell(issue, maximum_summary_column_width))
                 elif col == SearchResultColumn.ASSIGNEE:
                     row.append(Text(issue.assignee_display_name))
                 elif col == SearchResultColumn.REPORTER:
@@ -293,7 +309,7 @@ class IssuesSearchResultsTable(DataTable):
                 elif col == SearchResultColumn.DUE_DATE:
                     row.append(Text(issue.display_due_date))
 
-            self.add_row(*row, key=f'{issue.id}#{issue.key}')
+            self.add_row(*row, key=f'{issue.id}#{issue.key}', height=row_height)
 
     def on_data_table_row_selected(self, event: DataTable.RowSelected) -> None:
         """Fetches the details of the currently-selected item."""

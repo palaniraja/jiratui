@@ -204,6 +204,11 @@ class ApplicationConfiguration(BaseSettings):
       - assignee
       - updated
     """
+    search_results_summary_max_lines: int = 3
+    """Maximum number of lines to show for the Summary column in search results.
+
+    Values lower than 1 are treated as 1.
+    """
     git_repositories: dict | None = None
     """The Git repositories to create new branches based on work items. It expects a mapping from user-defined IDs into
     a dictionary with the name of the repository and the path to the directory that contains the .git directory.
