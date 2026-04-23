@@ -64,6 +64,8 @@ class WorkItemsSearchOrderBy(enum.Enum):
     PRIORITY_DESC = 'priority desc'
     KEY_ASC = 'key asc'
     KEY_DESC = 'key desc'
+    UPDATED_ASC = 'updated asc'
+    UPDATED_DESC = 'updated desc'
 
     @classmethod
     def to_choices(cls):

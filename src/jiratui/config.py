@@ -189,7 +189,7 @@ class ApplicationConfiguration(BaseSettings):
     ssl: SSLConfiguration | None = Field(default_factory=SSLConfiguration)
     """SSL configuration for client-side certificates and CA bundle."""
     search_results_default_order: WorkItemsSearchOrderBy = WorkItemsSearchOrderBy.CREATED_DESC
-    """The default order for search results. Accepts values from WorkItemsSearchOrderBy enum: CREATED_ASC,
+    """The default order for search results. Accepts values from WorkItemsSearchOrderBy enum: UPDATED_ASC, UPDATED_DESC, CREATED_ASC,
     CREATED_DESC, PRIORITY_ASC, PRIORITY_DESC, KEY_ASC, KEY_DESC."""
     git_repositories: dict | None = None
     """The Git repositories to create new branches based on work items. It expects a mapping from user-defined IDs into
