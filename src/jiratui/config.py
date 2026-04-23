@@ -124,6 +124,16 @@ class ApplicationConfiguration(BaseSettings):
     """When this is True (default) the application will fetch the comments of a work item after a comment is
     deleted from the list of comments. This makes the data more accurate but slower due to the extra request. When
     this is False the list of comments is updated in place."""
+    comments_collapsed_by_default: bool = True
+    """When True, comments are collapsed by default in the Comments tab.
+
+    This can be combined with `comments_open_by_default_count` to keep the latest N comments expanded.
+    """
+    comments_open_by_default_count: int = 1
+    """Number of latest comments to open by default when `comments_collapsed_by_default` is True.
+
+    Comments are ordered latest first, so this opens the newest N comments. Values <= 0 open none.
+    """
     pre_defined_jql_expressions: dict | None = None
     """A dictionary with pre-define JWL expressions to use in the JQL Expression Editor. Expects a mapping from
     user-defined IDs into a dictionary with a label and the expression. Example:

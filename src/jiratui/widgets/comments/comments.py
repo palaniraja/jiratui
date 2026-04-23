@@ -160,8 +160,10 @@ class IssueCommentsWidget(VerticalScroll):
         comment: IssueComment
         elements: list[CommentCollapsible] = []
         items.sort(key=lambda x: x.updated, reverse=True)
+        collapsed_by_default = CONFIGURATION.get().comments_collapsed_by_default
+        open_by_default_count = max(0, CONFIGURATION.get().comments_open_by_default_count)
         comment_text: Markdown | Static
-        for comment in items:
+        for index, comment in enumerate(items):
             if content := comment.get_body():
                 comment_text = Markdown(content)
             else:
@@ -180,12 +182,17 @@ class IssueCommentsWidget(VerticalScroll):
             hg.compose_add_child(Link('Open Link', url=url, tooltip='view comment in the browser'))
             hg.compose_add_child(Static(f' | Last Update: {comment.updated_on()}'))
 
+            collapsed = False
+            if collapsed_by_default:
+                collapsed = index >= open_by_default_count
+
             elements.append(
                 CommentCollapsible(
                     hg,
                     Rule(classes='rule-horizontal-compact-70'),
                     comment_text,
                     title=Text(comment.short_metadata()),
+                    collapsed=collapsed,
                     work_item_key=self.issue_key,
                     comment_id=comment.id,
                 )
