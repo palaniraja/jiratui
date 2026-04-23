@@ -77,14 +77,12 @@ class WorkItemInfoContainer(Vertical):
             yield VerticalScroll(id='work-item-info-extra-scroll-container')
 
     async def _setup_work_item_description(self, work_item: JiraIssue) -> None:
-        if work_item.description:
-            content: str = work_item.get_description()
-            if content:
-                await self.issue_description_widget.update(content)
-            else:
-                await self.issue_description_widget.update('Unable to display the description.')
+        content: str = work_item.get_description().strip()
+        if content:
+            await self.issue_description_widget.update(content)
             self.issue_description_widget.visible = True
             self.description_container.visible = True
+            self.description_container.display = True
             self.description_container.border_title = 'Description'
 
             # check if description is required in the edit metadata
@@ -100,10 +98,21 @@ class WorkItemInfoContainer(Vertical):
             else:
                 self.description_container.border_subtitle = ''
                 self.description_container.remove_class('required')
+
+            self.description_container.styles.height = '1fr'
+            self.extra_fields_container.styles.height = (
+                '1fr' if self._has_extra_custom_fields else 'auto'
+            )
         else:
             self.description_container.visible = False
+            self.description_container.display = False
             self.issue_description_widget.visible = False
             await self.issue_description_widget.update('')
+
+            self.description_container.styles.height = 'auto'
+            self.extra_fields_container.styles.height = (
+                '1fr' if self._has_extra_custom_fields else 'auto'
+            )
 
     def watch_issue(self, work_item: JiraIssue | None) -> None:
         # "reset" the information of any previous widget
@@ -116,9 +125,6 @@ class WorkItemInfoContainer(Vertical):
         self.issue_summary_widget.update(work_item.summary)
         self.issue_summary_widget.visible = True
         self.summary_container_widget.visible = True
-
-        # set the description of the work item and make the widget visible
-        self.run_worker(self._setup_work_item_description(work_item))
 
         # display all the editable custom fields with whose type is string-textarea
         self._has_extra_custom_fields = False
@@ -150,9 +156,13 @@ class WorkItemInfoContainer(Vertical):
 
         if self._has_extra_custom_fields:
             self.extra_fields_container.visible = True
-            self.description_container.styles.height = '50%'
+            self.extra_fields_container.display = True
         else:
-            self.description_container.styles.height = '92%'  # leave some space
+            self.extra_fields_container.visible = False
+            self.extra_fields_container.display = False
+
+        # set the description after custom fields are computed to keep sizing consistent
+        self.run_worker(self._setup_work_item_description(work_item))
         return None
 
     @staticmethod
@@ -174,9 +184,13 @@ class WorkItemInfoContainer(Vertical):
             # reset the value of the description and hide the widget
             self.run_worker(self.reset_description())
             self.description_container.visible = False
+            self.description_container.display = False
+            self.description_container.styles.height = 'auto'
             self.issue_description_widget.visible = False
             # remove the extra fields and hide the widget
             self.extra_fields_container.visible = False
+            self.extra_fields_container.display = False
+            self.extra_fields_container.styles.height = 'auto'
             self.extra_fields_container.remove_children()
 
     def show_loading(self) -> None:
