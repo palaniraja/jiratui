@@ -190,8 +190,8 @@ class IssueCommentsWidget(VerticalScroll):
                 key=lambda x: x.updated if x.updated else datetime.today().date(), reverse=True
             )
             collapsed_by_default = CONFIGURATION.get().comments_collapsed_by_default
-        open_by_default_count = max(0, CONFIGURATION.get().comments_open_by_default_count)
-        comment_text: Markdown | Static
+            open_by_default_count = max(0, CONFIGURATION.get().comments_open_by_default_count)
+            comment_text: Markdown | Static
             for index, comment in enumerate(data.comments):
                 if content := comment.get_body():
                     comment_text = Markdown(content)
@@ -218,15 +218,15 @@ class IssueCommentsWidget(VerticalScroll):
                 if collapsed_by_default:
                     collapsed = index >= open_by_default_count
 
-            elements.append(
-                CommentCollapsible(
-                    hg,
-                    Rule(classes='rule-horizontal-compact-70'),
-                    comment_text,
-                    title=Text(comment.short_metadata()),
-                    collapsed=collapsed,
-                    work_item_key=self.issue_key,
-                    comment_id=comment.id,
+                elements.append(
+                    CommentCollapsible(
+                        hg,
+                        Rule(classes='rule-horizontal-compact-70'),
+                        comment_text,
+                        title=Text(comment.short_metadata()),
+                        collapsed=collapsed,
+                        work_item_key=self._work_item_key,
+                        comment_id=comment.id,
+                    )
                 )
-            )
-        self.mount_all(elements)
+            self.mount_all(elements)
