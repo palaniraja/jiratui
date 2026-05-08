@@ -1,7 +1,9 @@
 from datetime import datetime
 import re
+import textwrap
 from typing import cast
 
+from rich.text import Text
 from textual import on
 from textual.app import ComposeResult
 from textual.binding import Binding
@@ -12,6 +14,7 @@ from textual.widgets import Button, Collapsible, Footer, Input, Label, Markdown,
 
 from jiratui.api_controller.controller import APIControllerResponse
 from jiratui.models import JiraWorklog, PaginatedJiraWorklog
+from jiratui.utils.dates import format_relative_time
 from jiratui.utils.urls import build_external_url_for_work_log
 from jiratui.widgets.base import DateInput
 
@@ -81,6 +84,10 @@ class WorkItemWorkLogScreen(Screen[dict]):
     WorkItemWorkLogScreen > Vertical > Label {
         color: $accent;
     }
+
+    WorkItemWorkLogScreen WorkLogCollapsible {
+        margin-bottom: 1;
+    }
     """
     BINDINGS = [
         ('escape', 'close_screen', 'Close'),
@@ -139,6 +146,27 @@ class WorkItemWorkLogScreen(Screen[dict]):
             f'Showing {self._worklog_counter} of {self._worklog_total_count}'
         )
 
+    def _build_worklog_title(self, index: int, worklog: JiraWorklog) -> Text:
+        comment = worklog.get_comment()
+        summary = textwrap.shorten(comment, width=80, placeholder='...') if comment else 'No description'
+        author = worklog.author.display_user if worklog.author else 'Unknown author'
+
+        title = Text()
+        title.append(f'{index} | {summary}')
+        title.append('\n')
+        title.append(author, style='cyan')
+        title.append('\n')
+        updated = worklog.updated or worklog.started
+        if updated:
+            title.append(updated.strftime('%Y-%m-%d %H:%M'))
+            if relative := format_relative_time(updated):
+                title.append(' (')
+                title.append(relative, style='yellow')
+                title.append(')')
+        else:
+            title.append('No date')
+        return title
+
     async def fetch_work_log(self) -> None:
         """Retrieves the work log data associated to a work item and updates the details in the screen.
 
@@ -157,7 +185,7 @@ class WorkItemWorkLogScreen(Screen[dict]):
             self._update_subtitle()
             elements: list[WorkLogCollapsible] = []
             worklog: JiraWorklog
-            for worklog in result.logs:
+            for index, worklog in enumerate(result.logs, start=1):
                 comment_text = ''
                 if worklog.comment and not (comment_text := worklog.get_comment()):
                     # this may happen if we fail to parse the ADF data for Jira Cloud API
@@ -167,7 +195,7 @@ class WorkItemWorkLogScreen(Screen[dict]):
                 elements.append(
                     WorkLogCollapsible(
                         Markdown(comment_text),
-                        title=worklog.display(),
+                        title=self._build_worklog_title(index, worklog),
                         url=url or None,
                         worklog_id=worklog.id,
                         work_item_key=self._work_item_key,

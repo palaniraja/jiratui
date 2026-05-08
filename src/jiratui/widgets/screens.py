@@ -775,7 +775,16 @@ class MainScreen(Screen):
         )
 
         # derive API fields from configured columns — always include the mandatory base fields
-        _base_fields = {'id', 'key', 'status', 'summary', 'issuetype', 'parent'}
+        _base_fields = {
+            'id',
+            'key',
+            'status',
+            'summary',
+            'issuetype',
+            'parent',
+            'assignee',
+            'updated',
+        }
         _column_fields = {
             col.jira_field
             for col in CONFIGURATION.get().search_results_columns
