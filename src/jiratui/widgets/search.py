@@ -241,11 +241,12 @@ class IssuesSearchResultsTable(DataTable):
         return Text('\n'.join(wrapped))
 
     def _build_grouped_details_cell(self, issue: JiraIssue, default_width: int) -> Text:
-        summary_line = self._build_summary_cell(issue, default_width).plain.splitlines()[0]
-        assignee_line = issue.assignee_display_name or 'Unassigned'
+        summary_text = self._build_summary_cell(issue, default_width)
+        assignee_line = issue.assignee_display_name or '-'
 
         details = Text()
-        details.append(summary_line)
+        details.append_text(summary_text)
+        details.append('\n')
         details.append('\n')
         details.append(assignee_line, style='cyan')
         details.append('\n')
@@ -285,7 +286,7 @@ class IssuesSearchResultsTable(DataTable):
             self.token_by_page[self.page + 1] = response.next_page_token
 
         self.add_columns(*['#', SearchResultColumn.KEY.label, SearchResultColumn.STATUS.label, 'Details'])
-        row_height = 4
+        row_height = max(4, self.summary_max_lines + 3)
 
         # build the rows
         for index, issue in enumerate(response.issues):
