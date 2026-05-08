@@ -1,6 +1,5 @@
-.jira-selector {
-    border: round $primary-lighten-3;
-    padding: 0 1;
+.tip {
+    color: $text-muted;
 }
 
 .rule-20 {
@@ -74,23 +73,7 @@
     border: round $primary-lighten-3;
     background: $background;
     &.required {
-        border: round red;
-    }
-    &:focus {
-        border: round $accent-lighten-3;
-    }
-}
-
-.work-item-key {
-    box_sizing: content-box;
-    height: 1;
-    border: round $primary-lighten-3;
-    width: 25;
-    margin: 0 0;
-    padding: 0 1;
-    background: $background;
-    &.required {
-        border: round red;
+        border: round $accent;
     }
     &:focus {
         border: round $accent-lighten-3;
@@ -106,41 +89,8 @@
     padding: 0 1;
     background: $background;
     &.required {
-        border: round red;
+        border: round $accent;
     }
-    &:focus {
-        border: round $accent-lighten-3;
-    }
-}
-
-/* JQL Expression */
-
-#input_search_term {
-    box_sizing: content-box;
-    height: 1;
-    border: round $primary-lighten-3;
-    width: 100%;
-    margin: 0 0;
-    padding: 0 1;
-    background: $background;
-    &.required {
-        border: round red;
-    }
-    &:focus {
-        border: round $accent-lighten-3;
-    }
-}
-
-/* Active Sprint Checkbox */
-
-.active-sprint-checkbox {
-    box_sizing: content-box;
-    height: 1;
-    border: round $primary-lighten-3;
-    width: 100%;
-    margin: 0 0;
-    padding: 0 0;
-    background: $background;
     &:focus {
         border: round $accent-lighten-3;
     }
@@ -214,58 +164,58 @@ IssueDescriptionWidget {
    align: left middle;
 }
 
-#edit-work-item-input-assignee {
+
+
+.create-update-field-widget {
     box_sizing: content-box;
     height: 1;
-    width: 100%;
-    margin: 0 0;
-    padding: 0 1;
-    border: round $primary-lighten-3;
-    background: $background;
-    &.required {
-        border: round red;
-    }
-    &:focus {
-        border: round $accent-lighten-3;
-    }
-}
-
-#edit-work-item-input-reporter {
-    box_sizing: content-box;
-    height: 1;
-    width: 100%;
-    margin: 0 0;
-    padding: 0 1;
-    border: round $primary-lighten-3;
-    background: $background;
-    &.required {
-        border: round red;
-    }
-    &:focus {
-        border: round $accent-lighten-3;
-    }
-}
-
-#jira-issue-status-selector-edit {
-    border: round $accent;
-    padding: 0 1;
-}
-
-.issue_details_input_field {
-    box_sizing: content-box;
-    height: 1;
+    width: 96%;
     border: round $primary-lighten-3;
     margin: 0 0;
     padding: 0 1;
     background: $background;
     &.required {
-        border: round red;
+        border: round $accent;
     }
     &:focus {
-        border: round $accent-lighten-3;
+        border: round $accent-lighten-1;
     }
     &.issue_key {
         width: 15;
+    }
+    &.summary {
+        width: 95%;
+    }
+    &.parent-key {
+        width: 20;
+    }
+    &.numeric {
+        width: 80%;
+    }
+    &.work-item-key {
+        width: 25;
+    }
+    &.input-date {
+        width: 18;
+    }
+}
+
+.create-update-users-field-widget {
+    box_sizing: content-box;
+    height: 1;
+    width: 95%;
+    border: round $primary-lighten-3;
+    margin: 0 0;
+    padding: 0 1;
+    background: $background;
+    &.required {
+        border: round $accent;
+    }
+    &:focus {
+        border: round $accent-lighten-1;
+    }
+    &.single-user {
+        width: 70%;
     }
 }
 
@@ -277,7 +227,7 @@ IssueParentField {
     padding: 0 1;
     background: $background;
     &.required {
-        border: round red;
+        border: round $accent;
     }
     &:focus {
         border: round $accent-lighten-3;
@@ -285,11 +235,6 @@ IssueParentField {
     &.issue_key {
         width: 15;
     }
-}
-
-IssueDetailsPrioritySelection {
-    border: round $accent;
-    padding: 0 1;
 }
 
 WorkItemDetailsDueDate {
@@ -301,52 +246,7 @@ WorkItemDetailsDueDate {
     padding: 0 1;
     background: $background;
     &.required {
-        border: round red;
-    }
-    &:focus {
-        border: round $accent-lighten-3;
-    }
-}
-
-WorkItemComponentsScreen {
-    align: center middle;
-    background: $background 80%;
-}
-WorkItemComponentsScreen > SelectionList {
-    width: 60%;
-    height: 50%;
-    border: round $primary-lighten-3;
-    padding: 0 1;
-    & > TextArea {
-        margin-top: 1;
-        scrollbar-size-vertical: 1;
-    }
-    & > ItemGrid {
-        margin-top: 1;
-    }
-    background: transparent;
-    scrollbar-size-vertical: 1;
-}
-
-IssueComponentsField {
-    box_sizing: content-box;
-    height: 1;
-    margin: 0 0;
-    padding: 0 0;
-    background: $background;
-    column-span: 3;
-}
-
-IssueComponentsField > #input-field-components {
-    box_sizing: border-box;
-    height: 3;
-    width: 100%;
-    border: round $primary-lighten-3;
-    margin: 0 0;
-    padding: 0 1;
-    background: $background;
-    &.required {
-        border: round red;
+        border: round $accent;
     }
     &:focus {
         border: round $accent-lighten-3;
@@ -380,6 +280,64 @@ CustomTitle > Rule.-horizontal {
     width: 1fr;
     padding: 0 0;
 }
+
+/* Search Filters Definitions - BEGIN */
+
+.dropdown {
+    border: round $primary-lighten-3;
+    padding: 0 1;
+}
+
+ActiveSprintCheckbox {
+    box_sizing: content-box;
+    height: 1;
+    border: round $primary-lighten-3;
+    width: 100%;
+    margin: 0 0;
+    padding: 0 0;
+    background: $background;
+    &:focus {
+        border: round $accent-lighten-3;
+    }
+    &.-on > .toggle--button {
+        background: $success;
+        color: $accent;
+    }
+}
+
+WorkItemInputWidget {
+    box_sizing: content-box;
+    height: 1;
+    border: round $primary-lighten-3;
+    width: 25;
+    margin: 0 0;
+    padding: 0 1;
+    background: $background;
+    &.required {
+        border: round $accent;
+    }
+    &:focus {
+        border: round $accent-lighten-3;
+    }
+}
+
+JQLSearchWidget {
+    box_sizing: content-box;
+    height: 1;
+    border: round $primary-lighten-3;
+    width: 100%;
+    margin: 0 0;
+    padding: 0 1;
+    background: $background;
+    &.required {
+        border: round $accent;
+    }
+    &:focus {
+        border: round $accent-lighten-3;
+    }
+}
+
+/* Search Filters Definitions - END */
 
 /* Quit Screen */
 
@@ -421,7 +379,6 @@ ConfirmDeleteItemScreen {
     background: $background 80%;
 }
 ConfirmDeleteItemScreen > Vertical {
-    width: 60%;
     width: 60%;
     height: auto;
     border: round $foreground;
@@ -476,13 +433,16 @@ AddCommentScreen {
     background: $background 80%;
 }
 AddCommentScreen > Vertical {
-    width: 50%;
-    height: 40%;
+    width: 60%;
+    height: 60%;
     border: round $foreground;
+    background: $background;
     padding: 0 1;
     & > TextArea {
         margin-top: 1;
         scrollbar-size-vertical: 1;
+        border: round $primary;
+        background: transparent;
     }
     & > ItemGrid {
         margin-top: 1;
@@ -554,7 +514,7 @@ RemoteLinkNameInputWidget {
     padding: 0 1;
     background: $background;
     &.required {
-        border: round red;
+        border: round $accent;
     }
     &:focus {
         border: round $accent-lighten-3;
@@ -570,7 +530,7 @@ RemoteLinkURLInputWidget {
     padding: 0 1;
     background: $background;
     &.required {
-        border: round red;
+        border: round $accent;
     }
     &:focus {
         border: round $accent-lighten-3;
@@ -643,89 +603,25 @@ LinkedWorkItemInputWidget {
 /* ---------------------------------------- Create Work Item Screen - BEGIN ---------------------------------------- */
 
 CreateWorkItemProjectSelectionInput {
-    border: round red;
+    border: round $accent;
     padding: 0 1;
 }
 
 CreateWorkItemIssueTypeSelectionInput {
-    border: round red;
+    border: round $accent;
     padding: 0 1;
-}
-
-CreateWorkItemIssueSummaryField {
-    box_sizing: content-box;
-    height: 1;
-    width: 80%;
-    border: round $primary-lighten-3;
-    margin: 0 0;
-    padding: 0 1;
-    background: $background;
-    &.required {
-        border: round red;
-    }
-    &:focus {
-        border: round $accent-lighten-3;
-    }
-}
-
-CreateWorkItemParentKeyField {
-    box_sizing: content-box;
-    height: 1;
-    width: 20;
-    margin: 0 0;
-    padding: 0 1;
-    border: round $primary-lighten-3;
-    background: $background;
-    &.required {
-        border: round red;
-    }
-    &:focus {
-        border: round $accent-lighten-3;
-    }
-}
-
-#create-work-item-reporter-selector {
-    box_sizing: content-box;
-    height: 1;
-    width: 100%;
-    margin: 0 0;
-    padding: 0 1;
-    border: round $primary-lighten-3;
-    background: $background;
-    &.required {
-        border: round red;
-    }
-    &:focus {
-        border: round $accent-lighten-3;
-    }
-}
-
-#create-work-item-assignee-selector {
-    box_sizing: content-box;
-    height: 1;
-    width: 100%;
-    margin: 00 0;
-    padding: 0 1;
-    border: round $primary-lighten-3;
-    background: $background;
-    &.required {
-        border: round red;
-    }
-    &:focus {
-        border: round $accent-lighten-3;
-    }
 }
 
 .create-work-item-multi-user-picker {
     box_sizing: content-box;
     height: 1;
     width: 100%;
-    margin: 00 0;
+    margin: 0 0;
     padding: 0 1;
     border: round $primary-lighten-3;
     background: $background;
     &.required {
-        border: round red;
+        border: round $accent;
     }
     &:focus {
         border: round $accent-lighten-3;
@@ -737,26 +633,6 @@ CreateWorkItemParentKeyField {
     padding: 0 1;
 }
 
-.create-work-item-float-input.-invalid {
-    border: round red;
-}
-
-.create-work-item-float-input {
-    box_sizing: content-box;
-    height: 1;
-    border: round $primary-lighten-3;
-    width: 20;
-    margin: 0 0;
-    padding: 0 1;
-    background: $background;
-    &.required {
-        border: round red;
-    }
-    &:focus {
-        border: round $accent-lighten-3;
-    }
-}
-
 .create-work-item-generic-input-field {
     box_sizing: content-box;
     height: 1;
@@ -766,7 +642,7 @@ CreateWorkItemParentKeyField {
     padding: 0 1;
     background: $background;
     &.required {
-        border: round red;
+        border: round $accent;
     }
     &:focus {
         border: round $accent-lighten-3;
@@ -780,7 +656,20 @@ CreateWorkItemParentKeyField {
     border: round $primary-lighten-3;
     padding: 0 1;
     &.required {
-        border: round red;
+        border: round $accent;
+    }
+}
+
+.update-work-item-generic-selector {
+    box_sizing: content-box;
+    height: 1;
+    width: 100%;
+    margin: 0 0;
+    padding: 0 1;
+    border: round $primary-lighten-3;
+    background: $background;
+    &.required {
+        border: round $accent;
     }
 }
 
@@ -837,7 +726,7 @@ AddWorkItemScreen > Vertical {
     padding: 0 1;
     background: $background;
     &.required {
-        border: round red;
+        border: round $accent;
     }
     &:focus {
         border: round $accent-lighten-3;
@@ -854,20 +743,43 @@ AddWorkItemScreen > Vertical {
 
 /* ---------------------------------------- Create Work Item Screen - END ---------------------------------------- */
 
-/* Confirmation Screen */
+/* ----------------------------------------- Confirmation Screen - BEGIN ------------------------------------------*/
 
 ConfirmationScreen {
     align: center middle;
+    background: $background 80%;
 }
-ConfirmationScreen > Grid {
-    grid-size: 2;
-    grid-gutter: 1 2;
-    grid-rows: 1fr 3;
+
+ConfirmationScreen > Vertical {
+    width: 40%;
+    height: 30%;
+    border: round $foreground;
     padding: 0 1;
-    width: 60;
-    height: 11;
-    border: thick $background 80%;
-    background: $surface;
+    & > Static {
+        margin-top: 1;
+    }
+}
+
+#confirmation-button-accept {
+    width: 20%;
+    padding: 0 0;
+    box_sizing: content-box;
+    border-top: blank $surface-lighten-1;
+    border-bottom: blank $surface-lighten-1;
+}
+
+#confirmation-button-cancel {
+    width: 20%;
+    padding: 0 0;
+    box_sizing: content-box;
+    border-top: blank $surface-lighten-1;
+    border-bottom: blank $surface-lighten-1;
+}
+
+.confirmation-screen-grid-buttons {
+    grid-size: 2 1;
+    grid-columns: 50% 50%;
+    align: center middle;
 }
 
 #confirmation-question {
@@ -877,13 +789,7 @@ ConfirmationScreen > Grid {
     content-align: center middle;
 }
 
-#confirmation-button-accept {
-    width: 100%;
-}
-
-#confirmation-button-cancel {
-    width: 100%;
-}
+/* ----------------------------------------- Confirmation Screen - END --------------------------------------------*/
 
 /* New Attachment Screen */
 
@@ -938,7 +844,7 @@ FileNameInputWidget {
     padding: 0 1;
     background: $background;
     &.required {
-        border: round red;
+        border: round $accent;
     }
     &:focus {
         border: round $accent-lighten-3;
@@ -1232,7 +1138,7 @@ TimeSpentInput, TimeRemainingInput {
     padding: 0 1;
     background: $background;
     &.required {
-        border: round red;
+        border: round $accent;
     }
     &:focus {
         border: round $accent-lighten-3;
@@ -1283,6 +1189,12 @@ WorkLogCollapsible {
     padding-bottom: 0;
 }
 
+.worklog-details-table {
+    background: transparent;
+    border: round $foreground;
+    color: $text-muted;
+}
+
 /* Screen and fields for flagging work items */
 
 FlagWorkItemScreen {
@@ -1316,31 +1228,6 @@ WorkItemFlagField {
 }
 
 /* Multi-checkbox field and screen */
-
-WorkItemDynamicFieldUpdateMultiCheckboxesWidget {
-    box_sizing: content-box;
-    height: 1;
-    margin: 0 0;
-    padding: 0 0;
-    background: $background;
-    column-span: 3;
-}
-
-WorkItemDynamicFieldUpdateMultiCheckboxesWidget > Input {
-    box_sizing: border-box;
-    height: 3;
-    width: 100%;
-    border: round $primary-lighten-3;
-    margin: 0 0;
-    padding: 0 1;
-    background: $background;
-    &.required {
-        border: round red;
-    }
-    &:focus {
-        border: round $accent-lighten-3;
-    }
-}
 
 SelectionsScreen {
     align: center middle;
@@ -1395,7 +1282,7 @@ MultiSelectWidget {
     background: $background;
     scrollbar-size-vertical: 1;
     &.required {
-        border: round red;
+        border: round $accent;
     }
     &:focus {
         border: round $accent-lighten-3;

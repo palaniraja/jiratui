@@ -28,6 +28,7 @@ def config_for_testing() -> ApplicationConfiguration:
     config_mock = Mock(spec=ApplicationConfiguration)
     config_mock.configure_mock(
         jira_api_base_url='foo.bar',
+        jira_base_url='foo.bar',
         jira_api_username='foo',
         jira_api_token=SecretStr('bar'),
         jira_api_version=3,
@@ -49,6 +50,7 @@ def config_for_testing() -> ApplicationConfiguration:
         update_additional_fields_ignore_ids=None,
         enable_creating_additional_fields=False,
         create_additional_fields_ignore_ids=None,
+        fetch_comments_on_delete=False,
     )
     return config_mock
 
@@ -220,8 +222,16 @@ def jira_worklogs() -> list[JiraWorklog]:
             started=datetime(2025, 10, 18, 13, 45, 0, tzinfo=timezone.utc),
             time_spent='1h',
             time_spent_seconds=3600,
-            author=Mock(spec=JiraUser),
-            update_author=Mock(spec=JiraUser),
+            author=JiraUser(
+                display_name='Bart',
+                account_id='1',
+                active=True,
+            ),
+            update_author=JiraUser(
+                display_name='Bart',
+                account_id='1',
+                active=True,
+            ),
             comment='-',
         ),
         JiraWorklog(
@@ -230,8 +240,16 @@ def jira_worklogs() -> list[JiraWorklog]:
             started=datetime(2025, 10, 19, 13, 45, 0, tzinfo=timezone.utc),
             time_spent='1h',
             time_spent_seconds=3600,
-            author=Mock(spec=JiraUser),
-            update_author=Mock(spec=JiraUser),
+            author=JiraUser(
+                display_name='Bart',
+                account_id='1',
+                active=True,
+            ),
+            update_author=JiraUser(
+                display_name='Bart',
+                account_id='1',
+                active=True,
+            ),
             comment='-',
         ),
     ]

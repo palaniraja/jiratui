@@ -2,17 +2,17 @@ import pytest
 
 from jiratui.app import JiraApp
 from jiratui.models import IssueStatus, IssueType, JiraIssue
-from jiratui.widgets.work_item_details.factory import create_dynamic_widgets_for_updating_work_item
-from jiratui.widgets.work_item_details.fields import (
-    WorkItemDynamicFieldUpdateDateTimeWidget,
-    WorkItemDynamicFieldUpdateDateWidget,
-    WorkItemDynamicFieldUpdateLabelsWidget,
-    WorkItemDynamicFieldUpdateMultiCheckboxesWidget,
-    WorkItemDynamicFieldUpdateNumericWidget,
-    WorkItemDynamicFieldUpdateSelectionWidget,
-    WorkItemDynamicFieldUpdateTextWidget,
-    WorkItemDynamicFieldUpdateURLWidget,
+from jiratui.widgets.commons.widgets import (
+    DateInputWidget,
+    DateTimeInputWidget,
+    LabelsWidget,
+    MultiSelectWidget,
+    NumericInputWidget,
+    SelectionWidget,
+    TextInputWidget,
+    URLWidget,
 )
+from jiratui.widgets.work_item_details.factory import create_dynamic_widgets_for_updating_work_item
 
 
 @pytest.fixture
@@ -81,7 +81,6 @@ def test_create_dynamic_widgets_without_edit_metadata(work_item: JiraIssue):
 @pytest.mark.parametrize(
     'field_key',
     [
-        'labels',
         'comment',
         'duedate',
         'issuelinks',
@@ -92,7 +91,6 @@ def test_create_dynamic_widgets_without_edit_metadata(work_item: JiraIssue):
         'priority',
         'flagged',
         'timetracking',
-        'components',
     ],
 )
 def test_create_dynamic_widgets_skip_static_update_fields(field_key: str, work_item: JiraIssue):
@@ -107,7 +105,6 @@ def test_create_dynamic_widgets_skip_static_update_fields(field_key: str, work_i
 @pytest.mark.parametrize(
     'field_name',
     [
-        'Labels',
         'comment',
         'duedate',
         'issuelinks',
@@ -118,7 +115,6 @@ def test_create_dynamic_widgets_skip_static_update_fields(field_key: str, work_i
         'priority',
         'flagged',
         'timetracking',
-        'components',
     ],
 )
 def test_create_dynamic_widgets_skip_static_update_fields_by_name(
@@ -182,7 +178,7 @@ def test_create_dynamic_widgets_skip_custom_fields_with_unsupported_schemas(
     schema_custom: str, work_item: JiraIssue
 ):
     # GIVEN
-    work_item.edit_meta['fields']['customfield_10021']['schema']['custom'] = schema_custom
+    work_item.edit_meta['fields'] = {'customfield_10021': {'schema': {'custom': schema_custom}}}
     # WHEN
     widgets = create_dynamic_widgets_for_updating_work_item(work_item)
     # THEN
@@ -233,7 +229,7 @@ async def test_create_dynamic_widgets_custom_field_float(work_item: JiraIssue, a
         widgets = create_dynamic_widgets_for_updating_work_item(work_item)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateNumericWidget)
+        assert isinstance(widgets[0], NumericInputWidget)
         assert widgets[0].id == work_item.edit_meta['fields']['customfield_10021']['key']
         assert widgets[0].original_value == 12.34
         assert widgets[0].value_has_changed is False
@@ -258,7 +254,7 @@ async def test_create_dynamic_widgets_custom_field_float_without_value(
         widgets = create_dynamic_widgets_for_updating_work_item(work_item)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateNumericWidget)
+        assert isinstance(widgets[0], NumericInputWidget)
         assert widgets[0].id == work_item.edit_meta['fields']['customfield_10021']['key']
         assert widgets[0].original_value is None
         assert widgets[0].value_has_changed is False
@@ -281,7 +277,7 @@ async def test_create_dynamic_widgets_custom_field_float_changing_value(
         widgets = create_dynamic_widgets_for_updating_work_item(work_item)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateNumericWidget)
+        assert isinstance(widgets[0], NumericInputWidget)
         assert widgets[0].id == work_item.edit_meta['fields']['customfield_10021']['key']
         assert widgets[0].original_value == 12.34
         widgets[0].value = '9.87'
@@ -324,7 +320,7 @@ async def test_create_dynamic_widgets_custom_field_date_picker(work_item: JiraIs
         widgets = create_dynamic_widgets_for_updating_work_item(work_item)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateDateWidget)
+        assert isinstance(widgets[0], DateInputWidget)
         assert widgets[0].id == work_item.edit_meta['fields']['customfield_10021']['key']
         assert widgets[0].original_value == '2025-12-31'
         assert widgets[0].value_has_changed is False
@@ -349,9 +345,9 @@ async def test_create_dynamic_widgets_custom_field_date_picker_without_value(
         widgets = create_dynamic_widgets_for_updating_work_item(work_item)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateDateWidget)
+        assert isinstance(widgets[0], DateInputWidget)
         assert widgets[0].id == work_item.edit_meta['fields']['customfield_10021']['key']
-        assert widgets[0].original_value == ''
+        assert widgets[0].original_value is None
         assert widgets[0].value_has_changed is False
         assert widgets[0].disabled is False
 
@@ -372,7 +368,7 @@ async def test_create_dynamic_widgets_custom_field_date_picker_changing_value(
         widgets = create_dynamic_widgets_for_updating_work_item(work_item)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateDateWidget)
+        assert isinstance(widgets[0], DateInputWidget)
         assert widgets[0].id == work_item.edit_meta['fields']['customfield_10021']['key']
         assert widgets[0].original_value == '2025-12-31'
         widgets[0].value = '2025-12-30'
@@ -415,7 +411,7 @@ async def test_create_dynamic_widgets_custom_field_date_time(work_item: JiraIssu
         widgets = create_dynamic_widgets_for_updating_work_item(work_item)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateDateTimeWidget)
+        assert isinstance(widgets[0], DateTimeInputWidget)
         assert widgets[0].id == work_item.edit_meta['fields']['customfield_10021']['key']
         assert widgets[0].original_value == '2025-12-31 10:20:30'
         assert widgets[0].value_has_changed is False
@@ -440,9 +436,9 @@ async def test_create_dynamic_widgets_custom_field_date_time_without_value(
         widgets = create_dynamic_widgets_for_updating_work_item(work_item)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateDateTimeWidget)
+        assert isinstance(widgets[0], DateTimeInputWidget)
         assert widgets[0].id == work_item.edit_meta['fields']['customfield_10021']['key']
-        assert widgets[0].original_value == ''
+        assert widgets[0].original_value is None
         assert widgets[0].value_has_changed is False
         assert widgets[0].disabled is False
 
@@ -463,7 +459,7 @@ async def test_create_dynamic_widgets_custom_field_date_time_changing_value(
         widgets = create_dynamic_widgets_for_updating_work_item(work_item)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateDateTimeWidget)
+        assert isinstance(widgets[0], DateTimeInputWidget)
         assert widgets[0].id == work_item.edit_meta['fields']['customfield_10021']['key']
         assert widgets[0].original_value == '2025-12-31 10:20:30'
         widgets[0].value = '2025-12-30 10:20:30'
@@ -504,7 +500,7 @@ async def test_create_dynamic_widgets_custom_field_url(work_item: JiraIssue, app
         widgets = create_dynamic_widgets_for_updating_work_item(work_item)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateURLWidget)
+        assert isinstance(widgets[0], URLWidget)
         assert widgets[0].id == work_item.edit_meta['fields']['customfield_10021']['key']
         assert widgets[0].original_value == 'https://foo.bar'
         assert widgets[0].value_has_changed is False
@@ -529,9 +525,9 @@ async def test_create_dynamic_widgets_custom_field_url_without_value(
         widgets = create_dynamic_widgets_for_updating_work_item(work_item)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateURLWidget)
+        assert isinstance(widgets[0], URLWidget)
         assert widgets[0].id == work_item.edit_meta['fields']['customfield_10021']['key']
-        assert widgets[0].original_value == ''
+        assert widgets[0].original_value == ''  # URLWidget converts None to empty string
         assert widgets[0].value_has_changed is False
         assert widgets[0].disabled is False
 
@@ -552,7 +548,7 @@ async def test_create_dynamic_widgets_custom_field_url_changing_value(
         widgets = create_dynamic_widgets_for_updating_work_item(work_item)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateURLWidget)
+        assert isinstance(widgets[0], URLWidget)
         assert widgets[0].id == work_item.edit_meta['fields']['customfield_10021']['key']
         assert widgets[0].original_value == 'https://foo.bar'
         widgets[0].value = 'https://foo.bar/1'
@@ -595,7 +591,7 @@ async def test_create_dynamic_widgets_custom_field_textfield(work_item: JiraIssu
         widgets = create_dynamic_widgets_for_updating_work_item(work_item)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateTextWidget)
+        assert isinstance(widgets[0], TextInputWidget)
         assert widgets[0].id == work_item.edit_meta['fields']['customfield_10021']['key']
         assert widgets[0].original_value == 'Some text'
         assert widgets[0].value_has_changed is False
@@ -620,9 +616,9 @@ async def test_create_dynamic_widgets_custom_field_textfield_without_value(
         widgets = create_dynamic_widgets_for_updating_work_item(work_item)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateTextWidget)
+        assert isinstance(widgets[0], TextInputWidget)
         assert widgets[0].id == work_item.edit_meta['fields']['customfield_10021']['key']
-        assert widgets[0].original_value == ''
+        assert widgets[0].original_value == ''  # TextInputWidget converts None to empty string
         assert widgets[0].value_has_changed is False
         assert widgets[0].disabled is False
 
@@ -643,7 +639,7 @@ async def test_create_dynamic_widgets_custom_field_textfield_changing_value(
         widgets = create_dynamic_widgets_for_updating_work_item(work_item)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateTextWidget)
+        assert isinstance(widgets[0], TextInputWidget)
         assert widgets[0].id == work_item.edit_meta['fields']['customfield_10021']['key']
         assert widgets[0].original_value == 'Some text'
         widgets[0].value = 'Some other text'
@@ -725,13 +721,15 @@ async def test_create_dynamic_widgets_custom_field_select(work_item: JiraIssue, 
         widgets = create_dynamic_widgets_for_updating_work_item(work_item)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateSelectionWidget)
+        assert isinstance(widgets[0], SelectionWidget)
         assert widgets[0].id == work_item.edit_meta['fields']['customfield_10128']['key']
         assert widgets[0].original_value == '10022'
         assert widgets[0].disabled is False
-        assert widgets[0].selection is None
+        assert widgets[0].selection == '10022'
         assert widgets[0].id == 'customfield_10128'
-        assert widgets[0].get_value_for_update() is None
+        assert widgets[0].get_value_for_update() == {
+            'id': '10022',
+        }
 
 
 @pytest.mark.asyncio
@@ -763,11 +761,11 @@ async def test_create_dynamic_widgets_custom_field_select_changing_value(
         widgets = create_dynamic_widgets_for_updating_work_item(work_item)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateSelectionWidget)
+        assert isinstance(widgets[0], SelectionWidget)
         assert widgets[0].id == work_item.edit_meta['fields']['customfield_10128']['key']
         assert widgets[0].original_value == '10022'
         assert widgets[0].disabled is False
-        assert widgets[0].selection is None
+        assert widgets[0].selection == '10022'
         widgets[0].value = '10023'
         assert widgets[0].value_has_changed is True
 
@@ -801,13 +799,13 @@ async def test_create_dynamic_widgets_custom_field_select_without_changing_value
         widgets = create_dynamic_widgets_for_updating_work_item(work_item)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateSelectionWidget)
+        assert isinstance(widgets[0], SelectionWidget)
         assert widgets[0].id == work_item.edit_meta['fields']['customfield_10128']['key']
         assert widgets[0].original_value == '10022'
         assert widgets[0].disabled is False
-        assert widgets[0].selection is None
+        assert widgets[0].selection == '10022'
         widgets[0].value = '10022'
-        assert widgets[0].value_has_changed is False
+        assert widgets[0].value_has_changed is False  # Setting to same value = no change
 
 
 ###
@@ -829,7 +827,7 @@ async def test_create_dynamic_widgets_custom_field_labels(work_item: JiraIssue, 
         widgets = create_dynamic_widgets_for_updating_work_item(work_item)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateLabelsWidget)
+        assert isinstance(widgets[0], LabelsWidget)
         assert widgets[0].id == work_item.edit_meta['fields']['customfield_10021']['key']
         assert widgets[0].original_value == ['label1', 'label2']
         assert widgets[0].value_has_changed is False
@@ -854,7 +852,7 @@ async def test_create_dynamic_widgets_custom_field_labels_without_value(
         widgets = create_dynamic_widgets_for_updating_work_item(work_item)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateLabelsWidget)
+        assert isinstance(widgets[0], LabelsWidget)
         assert widgets[0].id == work_item.edit_meta['fields']['customfield_10021']['key']
         assert widgets[0].original_value == []
         assert widgets[0].value_has_changed is False
@@ -877,7 +875,7 @@ async def test_create_dynamic_widgets_custom_field_labels_changing_value(
         widgets = create_dynamic_widgets_for_updating_work_item(work_item)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateLabelsWidget)
+        assert isinstance(widgets[0], LabelsWidget)
         assert widgets[0].id == work_item.edit_meta['fields']['customfield_10021']['key']
         assert widgets[0].original_value == ['label1', 'label2']
         widgets[0].value = 'label1,label3'
@@ -906,7 +904,7 @@ async def test_create_dynamic_widgets_custom_field_multicheckboxes_without_custo
         widgets = create_dynamic_widgets_for_updating_work_item(work_item)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateMultiCheckboxesWidget)
+        assert isinstance(widgets[0], MultiSelectWidget)
         assert widgets[0].get_value_for_update() == []
 
 
@@ -936,7 +934,7 @@ async def test_create_dynamic_widgets_custom_field_multicheckboxes_without_allow
         widgets = create_dynamic_widgets_for_updating_work_item(work_item)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateMultiCheckboxesWidget)
+        assert isinstance(widgets[0], MultiSelectWidget)
         assert widgets[0].get_value_for_update() == []
 
 
@@ -970,10 +968,10 @@ async def test_create_dynamic_widgets_custom_field_multicheckboxes(
         widgets = create_dynamic_widgets_for_updating_work_item(work_item)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateMultiCheckboxesWidget)
+        assert isinstance(widgets[0], MultiSelectWidget)
         assert widgets[0].id == work_item.edit_meta['fields']['customfield_10127']['key']
         assert widgets[0].disabled is False
-        assert widgets[0].get_value_for_update() == [{'value': 'Test Option A', 'id': '10020'}]
+        assert widgets[0].get_value_for_update() == [{'id': '10020'}]
         assert widgets[0].id == 'customfield_10127'
 
 
@@ -1007,9 +1005,9 @@ async def test_create_dynamic_widgets_custom_field_multicheckboxes_without_chang
         widgets = create_dynamic_widgets_for_updating_work_item(work_item)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateMultiCheckboxesWidget)
+        assert isinstance(widgets[0], MultiSelectWidget)
         assert widgets[0].id == work_item.edit_meta['fields']['customfield_10127']['key']
-        assert widgets[0].get_value_for_update() == [{'value': 'Test Option A', 'id': '10020'}]
+        assert widgets[0].get_value_for_update() == [{'id': '10020'}]
         assert widgets[0].value_has_changed is False
 
 
@@ -1020,13 +1018,10 @@ async def test_create_dynamic_widgets(work_item: JiraIssue, app: JiraApp):
         widgets = create_dynamic_widgets_for_updating_work_item(work_item)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateNumericWidget)
+        assert isinstance(widgets[0], NumericInputWidget)
         assert widgets[0].id == work_item.edit_meta['fields']['customfield_10021']['key']
         assert widgets[0].border_title == 'Test Field 1'
-        assert (
-            widgets[0].tooltip
-            == 'Test Field 1 (Tip: to ignore use the field key: customfield_10021)'
-        )
+        assert widgets[0].tooltip == 'Test Field 1 (Tip: to ignore use id: customfield_10021)'
         assert widgets[0].id == 'customfield_10021'
 
 
@@ -1039,13 +1034,10 @@ async def test_create_dynamic_widgets_required_field(work_item: JiraIssue, app: 
         widgets = create_dynamic_widgets_for_updating_work_item(work_item)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateNumericWidget)
+        assert isinstance(widgets[0], NumericInputWidget)
         assert widgets[0].id == work_item.edit_meta['fields']['customfield_10021']['key']
         assert widgets[0].border_title == 'Test Field 1'
-        assert (
-            widgets[0].tooltip
-            == 'Test Field 1 (Tip: to ignore use the field key: customfield_10021)'
-        )
+        assert widgets[0].tooltip == 'Test Field 1 (Tip: to ignore use id: customfield_10021)'
         assert widgets[0].border_subtitle == '(*)'
 
 
@@ -1072,7 +1064,7 @@ async def test_create_dynamic_widgets_field_number(
         widgets = create_dynamic_widgets_for_updating_work_item(work_item_no_custom_fields)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateNumericWidget)
+        assert isinstance(widgets[0], NumericInputWidget)
         assert widgets[0].id == work_item_no_custom_fields.edit_meta['fields']['field_key_1']['key']
         assert widgets[0].original_value == 1.23
         assert widgets[0].value_has_changed is False
@@ -1092,7 +1084,7 @@ async def test_create_dynamic_widgets_field_number_without_value(
         widgets = create_dynamic_widgets_for_updating_work_item(work_item_no_custom_fields)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateNumericWidget)
+        assert isinstance(widgets[0], NumericInputWidget)
         assert widgets[0].id == work_item_no_custom_fields.edit_meta['fields']['field_key_1']['key']
         assert widgets[0].original_value is None
         assert widgets[0].value_has_changed is False
@@ -1108,7 +1100,7 @@ async def test_create_dynamic_widgets_field_number_changing_value(
         widgets = create_dynamic_widgets_for_updating_work_item(work_item_no_custom_fields)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateNumericWidget)
+        assert isinstance(widgets[0], NumericInputWidget)
         assert widgets[0].id == work_item_no_custom_fields.edit_meta['fields']['field_key_1']['key']
         assert widgets[0].original_value == 1.23
         widgets[0].value = '9.87'
@@ -1147,7 +1139,7 @@ async def test_create_dynamic_widgets_field_date(
         widgets = create_dynamic_widgets_for_updating_work_item(work_item_no_custom_fields)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateDateWidget)
+        assert isinstance(widgets[0], DateInputWidget)
         assert widgets[0].id == work_item_no_custom_fields.edit_meta['fields']['field_key_1']['key']
         assert widgets[0].original_value == '2025-12-31'
         assert widgets[0].value_has_changed is False
@@ -1168,9 +1160,9 @@ async def test_create_dynamic_widgets_field_date_without_value(
         widgets = create_dynamic_widgets_for_updating_work_item(work_item_no_custom_fields)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateDateWidget)
+        assert isinstance(widgets[0], DateInputWidget)
         assert widgets[0].id == work_item_no_custom_fields.edit_meta['fields']['field_key_1']['key']
-        assert widgets[0].original_value == ''
+        assert widgets[0].original_value is None
         assert widgets[0].value_has_changed is False
         assert widgets[0].disabled is False
 
@@ -1188,7 +1180,7 @@ async def test_create_dynamic_widgets_field_date_changing_value(
         widgets = create_dynamic_widgets_for_updating_work_item(work_item_no_custom_fields)
         # THEN
         assert len(widgets) == 1
-        assert isinstance(widgets[0], WorkItemDynamicFieldUpdateDateWidget)
+        assert isinstance(widgets[0], DateInputWidget)
         assert widgets[0].id == work_item_no_custom_fields.edit_meta['fields']['field_key_1']['key']
         assert widgets[0].original_value == '2025-12-31'
         widgets[0].value = '2025-12-30'
