@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import importlib
 from io import BytesIO
 import json
 from typing import cast
@@ -24,6 +25,24 @@ from jiratui.utils.mime import (
 from jiratui.utils.urls import build_external_url_for_attachment
 from jiratui.widgets.attachments.add import AddAttachmentScreen
 from jiratui.widgets.confirmation_screen import ConfirmationScreen
+
+
+def _preload_textual_image_renderable() -> bool:
+    """Preloads textual-image renderer detection before Textual starts.
+
+    textual-image determines the best rendering protocol by querying the terminal.
+    Importing ``textual_image.renderable`` early makes that detection deterministic,
+    avoiding intermittent fallbacks to unicode/ascii renderers in capable terminals.
+    """
+
+    try:
+        importlib.import_module('textual_image.renderable')
+        return True
+    except Exception:
+        return False
+
+
+_TEXTUAL_IMAGE_RENDERABLE_READY = _preload_textual_image_renderable()
 
 
 @dataclass
